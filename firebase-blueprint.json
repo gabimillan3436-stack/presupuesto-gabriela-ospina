@@ -1,0 +1,195 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Configuración privada del perfil y presupuesto mensual de una cuenta.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "UID del propietario autenticado en Firebase Auth.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Nombre visible del usuario.",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "monthlyBudget": {
+          "type": "number",
+          "description": "Presupuesto mensual base en pesos colombianos (COP)."
+        },
+        "onboardingCompleted": {
+          "type": "boolean",
+          "description": "Indica si la cuenta completó la configuración inicial de presupuesto."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Marca de tiempo de creación asignada por el servidor."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Marca de tiempo de última actualización asignada por el servidor."
+        }
+      },
+      "required": [
+        "uid",
+        "displayName",
+        "monthlyBudget",
+        "onboardingCompleted",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Movement": {
+      "title": "Movement",
+      "description": "Registro financiero individual (gasto o ingreso) perteneciente exclusivamente a un usuario.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador único del movimiento.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "uid": {
+          "type": "string",
+          "description": "UID del usuario propietario del movimiento.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "type": {
+          "type": "string",
+          "description": "Tipo de movimiento financiero.",
+          "enum": ["expense", "income"],
+          "maxLength": 16
+        },
+        "day": {
+          "type": "number",
+          "description": "Día del mes (1 a 31)."
+        },
+        "isoDate": {
+          "type": "string",
+          "description": "Fecha en formato estricto YYYY-MM-DD.",
+          "minLength": 10,
+          "maxLength": 10,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "dateLabel": {
+          "type": "string",
+          "description": "Etiqueta legible de fecha.",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "shortDate": {
+          "type": "string",
+          "description": "Etiqueta corta de fecha.",
+          "minLength": 1,
+          "maxLength": 16
+        },
+        "weekday": {
+          "type": "string",
+          "description": "Día de la semana abreviado.",
+          "minLength": 1,
+          "maxLength": 12
+        },
+        "timeLabel": {
+          "type": "string",
+          "description": "Hora legible del registro.",
+          "minLength": 1,
+          "maxLength": 24
+        },
+        "concept": {
+          "type": "string",
+          "description": "Descripción o concepto del movimiento.",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "categoryId": {
+          "type": "string",
+          "description": "Identificador de categoría para gastos.",
+          "enum": [
+            "alimentacion",
+            "transporte",
+            "servicios",
+            "compras",
+            "entretenimiento"
+          ],
+          "maxLength": 32
+        },
+        "categoryLabel": {
+          "type": "string",
+          "description": "Nombre legible de la categoría.",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "paymentMethod": {
+          "type": "string",
+          "description": "Medio de pago para ingresos.",
+          "maxLength": 32
+        },
+        "amount": {
+          "type": "number",
+          "description": "Valor positivo del movimiento en COP."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Observaciones opcionales del movimiento.",
+          "maxLength": 500
+        },
+        "clientCreatedAt": {
+          "type": "number",
+          "description": "Marca numérica de orden cronológico."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Marca de tiempo de creación asignada por el servidor."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Marca de tiempo de actualización asignada por el servidor."
+        }
+      },
+      "required": [
+        "id",
+        "uid",
+        "type",
+        "day",
+        "isoDate",
+        "dateLabel",
+        "shortDate",
+        "weekday",
+        "timeLabel",
+        "concept",
+        "categoryLabel",
+        "amount",
+        "clientCreatedAt",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "Documento raíz privado por cuenta que almacena el presupuesto mensual y estado de bienvenida."
+    },
+    "/users/{userId}/movements/{movementId}": {
+      "schema": {
+        "$ref": "#/entities/Movement"
+      },
+      "description": "Subcolección privada de gastos e ingresos pertenecientes exclusivamente al usuario propietario."
+    }
+  }
+}
